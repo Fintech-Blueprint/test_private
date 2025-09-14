@@ -1151,6 +1151,38 @@ PIPELINE UNIVERSAL (PR / Feature → Prod)
 │   │   └─ Golden template mock deployment ok
 │   └─ Action si échec : bloquer dev / ticket SRE
 │
+---
+
+Petits manques / points à considérer (pour viser 100% « no-surprise »)
+
+Ci‑dessous une liste concise et actionnable des points mineurs à formaliser dans le blueprint afin d'éliminer les dernières zones grises qui causent typiquement des refactors coûteux.
+
+- Glossaire & taxonomie minimale : définir brièvement les termes critiques (Concierge, DB Manager, Outbox, DLQ, Ledger, Model Registry, SBOM) et leurs limites opérationnelles pour éviter interprétations divergentes.
+
+- Catalogue métriques & seuils types : exemples chiffrés par type de service (API, worker, modèle ML) — p95/p99 latency, error-rate, queue-depth thresholds, business KPI deltas, seuils de drift modèle. Ces valeurs servent de point de départ pour configurer les Gates.
+
+- Mapping rôles → approbations : tableau synthétique « qui approuve quoi » (Platform, Security, Compliance, Product, SRE, ML) avec seuils déclenchant approbation humaine (ex. vulnérabilité > severité 2, modèle à impact légal).
+
+- Templates de runbooks (incidents critiques) : trois runbooks courts et actionnables (double-charge / duplicate-payment, DB primary failure & failover, model-bias/high-FP event) avec owner, timeline d'escalade, commandes clés et artefacts à collecter.
+
+- Checklist Gate0 (onboarding infra rapide) : vérifications minimales avant de cloner le template (secrets manager reachable, registry signing policy active, RBAC minimal, GitOps webhook OK).
+
+- Règles de stockage & rétention chiffrées : clarifier chiffrement-at-rest/in-transit, durée minimale de rétention par catégorie (ledger durable, logs court-terme, analytics), et procédure de suppression auditée (droit à l'oubli).
+
+- Stratégie de versioning & compatibilité : règle semver pour APIs/events, politique de breaking-change (processus de migration), et lien entre versions API et contrats consommateurs (contract testing expectations).
+
+- Minimal onboarding pack (développeur) : checklist pour rendre une nouvelle recrue opérationnelle (environnements locaux mock, accès concierge mock, checklist PR/Gates quick wins).
+
+- Points optionnels selon criticité projet : skeleton pour catalog worker (metadata crawl), golden perf tests (baselines), guidance FinOps pour entraînements ML (coût par retrain estimé).
+
+Chaque item ci‑dessus est rapide à formaliser et réduit fortement le risque de surprises. Je peux produire immédiatement, en français et prêt à coller dans `docs/` :
+
+- le glossaire en une page,
+- le tableau rôles→approbations,
+- ou les 3 templates de runbook.
+
+Dis‑moi lequel tu veux en premier et je le génère tout de suite.
+
 ├── Gate 1 – PR CI CHECKS
 │   ├─ Patterns appliqués :
 │   │   ├─ Safety (unit, integration, contract)
